@@ -1,0 +1,23 @@
+# Cloudflare Worker 配置：离线授权码签/验服务
+name = "cet-license"
+main = "src/index.js"
+compatibility_date = "2025-04-01"
+
+# KV 命名空间：存订单白名单与已用记录
+# 先执行：wrangler kv namespace create ORDERS
+# 再把输出里的 id 填到下面
+kv_namespaces = [
+  { binding = "ORDERS", id = "<把 wrangler kv namespace create ORDERS 输出的 id 填这里>" }
+]
+
+[vars]
+DEFAULT_EXP = "2027-12-31"
+
+# —— 密钥与口令一律用 secret 注入（不进代码仓库）——
+# 本机先跑：node scripts/export_raw_keys.mjs  拿到 PRIV_SEED_HEX / PUB_RAW_HEX
+#   wrangler secret put PRIV_SEED_HEX        # 粘贴 64 位 hex（32 字节私钥）
+#   wrangler secret put PUB_RAW_HEX          # 粘贴 64 位 hex（32 字节公钥）
+#   wrangler secret put PAYHOOK_TOKEN        # 随便设一个长口令，支付回调用它校验
+#
+# 部署：wrangler deploy
+# 本地调试：wrangler dev
